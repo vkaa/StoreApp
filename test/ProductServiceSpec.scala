@@ -8,7 +8,7 @@ class ProductServiceSpec extends PlaySpec {
   "getCategories" should {
 
     "return empty collection for empty CategoriesData" in {
-      MockProductService.getCategories(Map()) mustBe empty
+      MockProductService.getCategories(Map(), Map()) mustBe empty
     }
 
     "return Product Categories 'cat1', 'cat2', 'cat3'" in {
@@ -16,11 +16,11 @@ class ProductServiceSpec extends PlaySpec {
         "cat2" -> Seq(),
         "cat3" -> Seq(),
         "cat1" -> Seq()
-      ))
+      ), Map( "cat2" -> "CAT2", "cat3" -> "CAT3", "cat1" -> "CAT1"))
       categories.length mustBe 3
-      categories contains "cat1"
-      categories contains "cat2"
-      categories contains "cat3"
+      categories contains ProductCategory("cat1", "CAT1")
+      categories contains ProductCategory("cat2", "CAT2")
+      categories contains ProductCategory("cat3", "CAT3")
     }
   }
 

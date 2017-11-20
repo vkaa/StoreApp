@@ -33,11 +33,16 @@ class MockProductService extends ProductService {
     "liquor" -> Seq("701", "553")
   )
 
+  private val mockCategoriesNames = List("frisbees", "cats", "liquor")
+      .map { it => it -> it.toUpperCase } toMap
+
   override def categories = Future {
-    MockProductService.getCategories(mockCategoriesData).sortBy(_.name)
+    MockProductService.getCategories(mockCategoriesData, mockCategoriesNames).sortBy(_.name)
   }
 
-  override def category(categoryId: CategoryId) = ???
+  override def category(categoryId: CategoryId) = Future {
+    MockProductService.getProducts(mockCategoriesData, categoryId)
+  }
 
   override def productDetails(productId: ProductId) = ???
 }
@@ -45,7 +50,11 @@ class MockProductService extends ProductService {
 object MockProductService {
 
   type CategoriesData = Map[CategoryId, Seq[ProductId]]
+  type CategoriesNames = Map[CategoryId, String]
 
-  def getCategories(xs: CategoriesData): Seq[ProductCategory] =
-    xs.keys.map(k => ProductCategory(k, k)).toSeq
+  def getCategories(xs: CategoriesData, ys: CategoriesNames): Seq[ProductCategory] =
+    xs.keys.map(k => ProductCategory(k, ys getOrElse(k, s"Unknown category Id '$k'"))).toSeq
+
+  def getProducts(xs: CategoriesData, x: CategoryId): Option[Seq[ProductId]] =
+    xs get x
 }

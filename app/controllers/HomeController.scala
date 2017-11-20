@@ -34,6 +34,15 @@ class HomeController @Inject() (productService: ProductService, priceService: Pr
     }
   }
 
-  def category(id: CategoryId) = Action { NotImplemented }
+  def category(id: CategoryId) = Action.async {
+    Try {
+      for {
+        products <- productService.category(id)
+      } yield Ok(views.html.products(id, products))
+    } match {
+      case Success(result) => result
+      case _ => Future.successful(Ok(HtmlFormat.raw("<h1>Failed get products for category</h1>")))
+    }
+  }
 
 }
