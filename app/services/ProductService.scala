@@ -5,6 +5,7 @@ import com.google.inject.ImplementedBy
 import model.{CategoryId, ProductCategory, ProductId, ProductInfo}
 
 import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 @ImplementedBy(classOf[MockProductService])
 trait ProductService {
@@ -32,10 +33,19 @@ class MockProductService extends ProductService {
     "liquor" -> Seq("701", "553")
   )
 
-  override def categories = ???
+  override def categories = Future {
+    MockProductService.getCategories(mockCategoriesData).sortBy(_.name)
+  }
 
   override def category(categoryId: CategoryId) = ???
 
   override def productDetails(productId: ProductId) = ???
 }
 
+object MockProductService {
+
+  type CategoriesData = Map[CategoryId, Seq[ProductId]]
+
+  def getCategories(xs: CategoriesData): Seq[ProductCategory] =
+    xs.keys.map(k => ProductCategory(k, k)).toSeq
+}
