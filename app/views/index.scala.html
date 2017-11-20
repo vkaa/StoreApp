@@ -1,0 +1,14 @@
+@(categories: Seq[model.ProductCategory])
+
+@main("Welcome to My Store") {
+
+<h1>Main product categories</h1>
+<ul>
+@for(productCategory <- categories) {
+    <li>
+        <a href="@routes.HomeController.category(productCategory.id)">@productCategory.name</a>
+    </li>
+}
+</ul>
+
+}
