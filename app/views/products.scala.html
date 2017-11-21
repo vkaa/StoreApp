@@ -1,9 +1,10 @@
-@import model.ProductId
+@import model.{CategoryId, ProductId}
 
-@(categoryName: String, xs: Option[Seq[ProductId]])
+@(categoryId: CategoryId, categoryName: String, xs: Option[Seq[ProductId]])
 
 <title>Category: @categoryName</title>
 <h1>Products in category @categoryName</h1>
+
 <ul>
 @for(product <- xs.getOrElse(List())) {
     <li>

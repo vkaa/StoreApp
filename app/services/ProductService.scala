@@ -9,10 +9,10 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 @ImplementedBy(classOf[MockProductService])
 trait ProductService {
+  def categoryName(categoryId: CategoryId): Future[Option[String]]
   def categories: Future[Seq[ProductCategory]]
   def category(categoryId: CategoryId): Future[Option[Seq[ProductId]]]
   def productDetails(productId: ProductId): Future[Option[ProductInfo]]
-
 }
 
 class MockProductService extends ProductService {
@@ -36,12 +36,18 @@ class MockProductService extends ProductService {
   private val mockCategories: Map[CategoryId, String] = List("frisbees", "cats", "liquor", "no products")
     .map { it => it -> it.toLowerCase.capitalize }.toMap
 
+  override def categoryName(categoryId: CategoryId) = Future {
+    mockCategories get categoryId
+  }
+
   override def categories = Future {
     implicit val byName = ProductCategory.byName
     mockCategories.map { case (k, v) => ProductCategory(k, v) }.toSeq.sorted
   }
 
-  override def category(categoryId: CategoryId) = ???
+  override def category(categoryId: CategoryId) = Future {
+    mockCategoriesData get categoryId
+  }
 
   override def productDetails(productId: ProductId) = ???
 }
