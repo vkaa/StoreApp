@@ -5,10 +5,15 @@
 <title>Category: @categoryName</title>
 <h1>Products in category @categoryName</h1>
 
-<ul>
-@for(product <- xs.getOrElse(List())) {
-    <li>
+@xs match {
+  case None => { <h2>No products in the selected category</h2> }
+  case Some(products) => {
+    <ul>
+    @for(product <- products) {
+      <li>
         @product
-    </li>
+      </li>
+    }
+    </ul>
+  }
 }
-</ul>
