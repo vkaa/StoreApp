@@ -4,7 +4,7 @@ import javax.inject._
 
 import play.api.mvc._
 import play.twirl.api.HtmlFormat
-import model.{CategoryId, ProductCategory}
+import model.CategoryId
 import services.{PriceService, ProductService}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +38,9 @@ class HomeController @Inject() (productService: ProductService, priceService: Pr
       for {
         products <- productService.category(categoryId)
         categoryName <- productService.categoryName(categoryId)
-      } yield Ok(views.html.products(categoryId, categoryName.getOrElse("Unknown"), products))
+      } yield Ok(views.html.products(categoryId,
+                categoryName.getOrElse(s"with id '$categoryId', name is not available"),
+                products))
     } match {
       case Success(result) => result
       case _ => Future.successful(Ok(HtmlFormat.raw("<h1>Failed get products for category</h1>")))
