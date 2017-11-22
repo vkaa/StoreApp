@@ -2,8 +2,7 @@
 
 @(categoryId: CategoryId,
         categoryName: Either[String, Option[String]],
-        categoryProducts: Option[Seq[(ProductId, Option[String])]],
-        productsPrices: Map[ProductId, Option[BigDecimal]])
+        categoryProducts: Option[Seq[(ProductId, Option[String])]])
 
 @categoryName match {
   case Left(message) => {

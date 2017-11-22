@@ -53,7 +53,8 @@ class HomeController @Inject() (productService: ProductService, priceService: Pr
 //                                    )
           )
         }
-      } yield Ok(views.html.products(categoryId, categoryName, categoryProducts, productsPrices))
+//      } yield Ok(views.html.products(categoryId, categoryName, categoryProducts, productsPrices))
+      } yield Ok(views.html.products(categoryId, categoryName, categoryProducts))
     } match {
       case Success(result) => result
       case _ => Future.successful(Ok(HtmlFormat.raw("<h1>Failed get products for category</h1>")))

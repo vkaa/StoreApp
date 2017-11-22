@@ -11,14 +11,14 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 trait PriceService {
   def price(productId: ProductId): Future[Option[Price]]
 //  def prices(xs: Seq[ProductId]): Future[Map[ProductId, BigDecimal]]
-  def prices(xs: Seq[ProductId]): Future[Map[ProductId, Option[BigDecimal]]] = Future {
+  def prices(xs: Seq[ProductId]): Future[Map[ProductId, Option[Price]]] = Future {
     xs.map { it: ProductId =>
       Try{
         for {
-          pr: Option[BigDecimal] <- price(it)
+          pr: Option[Price] <- price(it)
         } yield pr
       } match {
-        case Success(res: Option[BigDecimal]) => (it, res)
+        case Success(res: Option[Price]) => (it, res)
         case _ => (it, None)
       }
     }.toMap
@@ -27,18 +27,17 @@ trait PriceService {
 
 object MockPriceService extends PriceService {
 
-  private val mockPrice: Map[ProductId, BigDecimal] = Map(
+  private val mockPrice: Map[ProductId, Price] = Map(
     "133" -> 133.33,
     "115" -> 115.15,
     "103" -> 103.03,
     "112" -> 112.12,
     "109" -> 109.09,
     "701" -> 701.01,
-    "553" -> 553.53,
-    "777" -> 777.77
+    "553" -> 553.53
   )
 
-  def price(productId: ProductId): Future[Option[BigDecimal]] = Future {
+  def price(productId: ProductId): Future[Option[Price]] = Future {
     mockPrice get productId
   }
 
@@ -60,6 +59,7 @@ object MockPriceService extends PriceService {
 
 class FlakyMockPriceService extends PriceService {
   def price(productId: ProductId) = {
+//    Future.failed(new Exception("Someone snipped the network cable!"))
     val isFailure = Random.nextInt(4) == 0
     if (isFailure) Future.failed(new Exception("Someone snipped the network cable!"))
     else MockPriceService.price(productId)
