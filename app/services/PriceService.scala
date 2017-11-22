@@ -10,19 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 @ImplementedBy(classOf[FlakyMockPriceService])
 trait PriceService {
   def price(productId: ProductId): Future[Option[Price]]
-//  def prices(xs: Seq[ProductId]): Future[Map[ProductId, BigDecimal]]
-  def prices(xs: Seq[ProductId]): Future[Map[ProductId, Option[Price]]] = Future {
-    xs.map { it: ProductId =>
-      Try{
-        for {
-          pr: Option[Price] <- price(it)
-        } yield pr
-      } match {
-        case Success(res: Option[Price]) => (it, res)
-        case _ => (it, None)
-      }
-    }.toMap
-  }
+  def prices(xs: Seq[ProductId]): Future[Seq[(ProductId, Option[Price])]]
 }
 
 object MockPriceService extends PriceService {
@@ -41,29 +29,29 @@ object MockPriceService extends PriceService {
     mockPrice get productId
   }
 
-  /*
-  def prices(xs: Seq[ProductId]): Future[Map[ProductId, Option[BigDecimal]]] = Future {
+  def pricesAsFutures(xs: Seq[ProductId])(implicit price: ProductId => Future[Option[Price]]): Seq[Future[(ProductId, Option[Price])]] =
     xs.map { it: ProductId =>
-      Try{
-        for {
-          pr: Option[BigDecimal] <- price(it)
-        } yield pr
-      } match {
-        case Success(res: Option[BigDecimal]) => (it, res)
-        case _ => (it, None)
-      }
-    }.toMap
+      for {
+        pr: Option[Price] <- price(it)
+      } yield (it, pr)
+    }
+
+  def prices(xs: Seq[ProductId]): Future[Seq[(ProductId, Option[Price])]] = {
+    implicit val pr: ProductId => Future[Option[Price]] = MockPriceService.price
+    Future.sequence { pricesAsFutures(xs) }
   }
-  */
 }
 
 class FlakyMockPriceService extends PriceService {
+
   def price(productId: ProductId) = {
-//    Future.failed(new Exception("Someone snipped the network cable!"))
     val isFailure = Random.nextInt(4) == 0
     if (isFailure) Future.failed(new Exception("Someone snipped the network cable!"))
     else MockPriceService.price(productId)
   }
-//  def prices(xs: Seq[ProductId]): Future[Map[ProductId, Option[BigDecimal]]] =
-//    MockPriceService.prices(xs)
+
+  def prices(xs: Seq[ProductId]): Future[Seq[(ProductId, Option[Price])]] = {
+    implicit val pr: ProductId => Future[Option[Price]] = price
+    Future.sequence { MockPriceService.pricesAsFutures(xs) }
+  }
 }
