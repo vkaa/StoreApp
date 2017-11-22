@@ -10,7 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 trait ProductService {
   def categoryName(categoryId: CategoryId): Future[Option[String]]
   def categories: Future[Seq[ProductCategory]]
-  def category(categoryId: CategoryId): Future[Either[String, Option[Seq[ProductId]]]]
+  def category(categoryId: CategoryId): Future[Either[String, Option[Seq[(ProductId, Option[String])]]]]
   def productDetails(productId: ProductId): Future[Option[ProductInfo]]
 }
 
@@ -29,7 +29,7 @@ class MockProductService extends ProductService {
   private val mockCategoriesData = Map(
     "frisbees" -> Seq("133", "115"),
     "cats" -> Seq("103", "112", "109"),
-    "liquor" -> Seq("701", "553")
+    "liquor" -> Seq("701", "553", "777")
   )
 
   private val mockCategories: Map[CategoryId, String] = List("frisbees", "cats", "liquor", "no products")
@@ -45,9 +45,12 @@ class MockProductService extends ProductService {
   }
 
   override def category(categoryId: CategoryId) = Future {
-    mockCategories.get(categoryId).map(
-      _ => Right(mockCategoriesData.get(categoryId))
-    ).getOrElse(Left(s"Category Id '$categoryId' does not exist"))
+    mockCategories.get(categoryId)
+      .map(
+        _ => Right(mockCategoriesData.get(categoryId)
+                  .map( seq => seq
+                  .map( id => (id, mockProductData.get(id).map(it => it.name).orElse(None))))))
+      .getOrElse(Left(s"Category Id '$categoryId' does not exist"))
   }
 
   override def productDetails(productId: ProductId) = ???

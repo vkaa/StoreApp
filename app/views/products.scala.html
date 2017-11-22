@@ -1,6 +1,6 @@
 @import model.{CategoryId, ProductId}
 
-@(categoryId: CategoryId, categoryName: Either[String, Option[String]], xs: Option[Seq[ProductId]])
+@(categoryId: CategoryId, categoryName: Either[String, Option[String]], xs: Option[Seq[(ProductId, Option[String])]])
 
 @categoryName match {
   case Left(message) => {
@@ -22,9 +22,18 @@
           case Some(products) => {
             <ul>
             @for(product <- products) {
-              <li>
-                <a href="@routes.ProductController.product(product)">@product</a>
-              </li>
+                @product._2 match {
+                  case None => {
+                    <li>
+                      Product Id: @product._1 - no product information
+                    </li>
+                  }
+                  case Some(name) => {
+                    <li>
+                      <a href="@routes.ProductController.product(product._1)">@name</a>
+                    </li>
+                  }
+                }
             }
             </ul>
           }
