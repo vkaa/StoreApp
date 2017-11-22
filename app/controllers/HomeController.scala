@@ -36,11 +36,13 @@ class HomeController @Inject() (productService: ProductService, priceService: Pr
   def category(categoryId: CategoryId) = Action.async {
     Try {
       for {
-        products <- productService.category(categoryId)
-        categoryName <- productService.categoryName(categoryId)
-      } yield Ok(views.html.products(categoryId,
-                categoryName.getOrElse(s"with id '$categoryId', name is not available"),
-                products))
+        resp <- productService.category(categoryId)
+        name <- productService.categoryName(categoryId)
+        (categoryName, categoryProducts) = resp match {
+          case Left(s) => (Left(s), None)
+          case Right(products) => (Right(name), products)
+        }
+      } yield Ok(views.html.products(categoryId, categoryName, categoryProducts))
     } match {
       case Success(result) => result
       case _ => Future.successful(Ok(HtmlFormat.raw("<h1>Failed get products for category</h1>")))

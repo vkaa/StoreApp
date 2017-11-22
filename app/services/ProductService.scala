@@ -1,7 +1,6 @@
 package services
 
 import com.google.inject.ImplementedBy
-
 import model.{CategoryId, ProductCategory, ProductId, ProductInfo}
 
 import scala.concurrent.Future
@@ -11,7 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 trait ProductService {
   def categoryName(categoryId: CategoryId): Future[Option[String]]
   def categories: Future[Seq[ProductCategory]]
-  def category(categoryId: CategoryId): Future[Option[Seq[ProductId]]]
+  def category(categoryId: CategoryId): Future[Either[String, Option[Seq[ProductId]]]]
   def productDetails(productId: ProductId): Future[Option[ProductInfo]]
 }
 
@@ -46,7 +45,9 @@ class MockProductService extends ProductService {
   }
 
   override def category(categoryId: CategoryId) = Future {
-    mockCategoriesData get categoryId
+    mockCategories.get(categoryId).map(
+      _ => Right(mockCategoriesData.get(categoryId))
+    ).getOrElse(Left(s"Category Id '$categoryId' does not exist"))
   }
 
   override def productDetails(productId: ProductId) = ???

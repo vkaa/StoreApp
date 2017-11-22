@@ -1,19 +1,35 @@
 @import model.{CategoryId, ProductId}
 
-@(categoryId: CategoryId, categoryName: String, xs: Option[Seq[ProductId]])
+@(categoryId: CategoryId, categoryName: Either[String, Option[String]], xs: Option[Seq[ProductId]])
 
-<title>Category: @categoryName</title>
-<h1>Products in category @categoryName</h1>
+@categoryName match {
+  case Left(message) => {
+    <title>@message</title>
+    <h1>@message</h1>
+  }
+  case Right(opt) => {
+    @opt match {
+      case None => {
+        <title>Category: Id '@categoryId', name is not provided</title>
+        <h1>Category: Id '@categoryId', name is not provided</h1>
+      }
+      case Some(name) => {
+        <title>Category: @name</title>
+        <h1>Category: @name</h1>
 
-@xs match {
-  case None => { <h2>No products in the selected category</h2> }
-  case Some(products) => {
-    <ul>
-    @for(product <- products) {
-      <li>
-        @product
-      </li>
+        @xs match {
+          case None => { <h2>No products in the selected category</h2> }
+          case Some(products) => {
+            <ul>
+            @for(product <- products) {
+              <li>
+              @product
+              </li>
+            }
+            </ul>
+          }
+        }
+      }
     }
-    </ul>
   }
 }
