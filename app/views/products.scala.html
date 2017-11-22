@@ -23,7 +23,7 @@
             <ul>
             @for(product <- products) {
               <li>
-              @product
+                <a href="@routes.ProductController.product(product)">@product</a>
               </li>
             }
             </ul>
