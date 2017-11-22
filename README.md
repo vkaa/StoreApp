@@ -19,4 +19,4 @@ performs well. Provide documentation in the code for any special considerations 
     * DONE - The product name,
     * WIP - The product's price,
     * NOT STARTED - Any attributes that are defined in the product info. (Format as you like, we don’t care, we’re backend developers.)
-3. SOME TESTS - Include appropriate unit tests.
+3. SOME TESTS ("sbt test"") - Include appropriate unit tests.
