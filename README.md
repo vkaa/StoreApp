@@ -11,12 +11,12 @@ You do not need to delve into UI and design concerns (assume someone else will w
 looking for a solution that reacts appropriately to requests, produces the correct data in responses, is resilient and 
 performs well. Provide documentation in the code for any special considerations or concerns regarding your solution. 
 
-## Task Requirements
+## Task Requirements with Status
 1. Create a category page that displays:
-    * The name of the category,
-    * A list of the items in the category (show their name) with each item being a link to the product details page.
+    * DONE - The name of the category,
+    * DONE - A list of the items in the category (show their name) with each item being a link to the product details page.
 2. Create a product details page that displays:
-    * The product name,
-    * The product's price,
-    * Any attributes that are defined in the product info. (Format as you like, we don’t care, we’re backend developers.)
-3. Include appropriate unit tests.
+    * DONE - The product name,
+    * WIP - The product's price,
+    * NOT STARTED - Any attributes that are defined in the product info. (Format as you like, we don’t care, we’re backend developers.)
+3. SOME TESTS - Include appropriate unit tests.
