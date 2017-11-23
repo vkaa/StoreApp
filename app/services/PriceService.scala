@@ -61,7 +61,8 @@ class FlakyMockPriceService extends PriceService {
   }
 
   def prices(xs: Seq[ProductId]): Future[Seq[(ProductId, Option[Price])]] = {
-    implicit val pr: ProductId => Future[Option[Price]] = price
+//    implicit val pr: ProductId => Future[Option[Price]] = price
+    implicit val pr: ProductId => Future[Option[Price]] = MockPriceService.price
     Future.sequence { MockPriceService.pricesAsFutures(xs) }
   }
 }
