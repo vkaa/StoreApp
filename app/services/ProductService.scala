@@ -11,8 +11,8 @@ trait ProductService {
   def categoryName(categoryId: CategoryId): Future[Option[String]]
   def categories: Future[Seq[ProductCategory]]
   def category(categoryId: CategoryId): Future[
-    Either[
-      String, // message when categoryId doesn't exist
+    Either[ // many things can go wrong
+      String, // categoryId doesn't exist
       Option[ // categoryId exists but there are no products
         Seq[  // collection of
           (ProductId, // productId
