@@ -44,17 +44,8 @@ class HomeController @Inject() (productService: ProductService, priceService: Pr
           case Right(products) => (Right(name),
                                     products,
                                     products.map(it => priceService.prices(it.map(_._1)))
-//                                    .map(it =>
-//                                      Try {
-//                                        for (prices <- it) yield prices
-//                                      } match {
-//                                        case Success(prices) => prices
-//                                        case _ =>
-//                                      }
-//                                    )
           )
         }
-//      } yield Ok(views.html.products(categoryId, categoryName, categoryProducts, productsPrices))
       } yield Ok(views.html.products(categoryId, categoryName, categoryProducts))
     } match {
       case Success(result) => result
