@@ -1,9 +1,10 @@
-import model.{CategoryStatus, ProductCategory}
+import model.{CategoryStatus, ProductCategory, ProductId}
 import org.scalatestplus.play.PlaySpec
 import services.{MockProductService, ProductService}
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 class ProductServiceSpec extends PlaySpec {
 
@@ -63,6 +64,23 @@ class ProductServiceSpec extends PlaySpec {
           case None => succeed
         }
       }
+    }
+  }
+
+  "Product products" should {
+    val svc: ProductService = new MockProductService
+
+    "find products with names in category 'frisbees'" in {
+      val products: Seq[(ProductId, Option[String])] = Await.result(
+        for {
+          catStatus <- svc.category("frisbees")
+          products = svc.products(catStatus)
+        } yield products,
+        1.seconds)
+      products.length mustBe 2
+      val productMap = products.toMap
+      productMap.get("133").flatten mustBe Some("Whamo Super Disc")
+      productMap.get("115").flatten mustBe Some("Acme Ankle Buster")
     }
   }
 }

@@ -12,21 +12,17 @@ class ProductPriceSpec extends PlaySpec {
 
     "having CategoryId 'frisbees' get ProductIds '133' and '115' and corresponding prices 133.33 and 115.15" in {
       val prodSvc = new MockProductService
-//      val priceSvc = new FlakyMockPriceService
+      //      val priceSvc = new FlakyMockPriceService
       val priceSvc = MockPriceService
       val prices: Seq[(ProductId, Option[Price])] = Await.result(
-            for {
-              products <- prodSvc.category("frisbees")
-              optOfSeq: Option[Seq[(ProductId, Option[String])]] = products match {
-                case Left(_) => None
-                case Right(x) => x
-              }
-              seqOfPairs: Seq[(ProductId, Option[String])] = optOfSeq.getOrElse(List())
-              (seqOfIds: Seq[ProductId], _) = seqOfPairs.unzip
-              prices <- priceSvc.prices(seqOfIds)
-            } yield prices,
-          1.seconds
-        )
+        for {
+          catStatus <- prodSvc.category("frisbees")
+          products = prodSvc.products(catStatus)
+          (seqOfIds: Seq[ProductId], _) = products.unzip
+          prices <- priceSvc.prices(seqOfIds)
+        } yield prices,
+        1.seconds
+      )
       prices.length mustBe 2
       val priceMap = prices.toMap
       priceMap.get("133").flatten mustBe Some(133.33)
