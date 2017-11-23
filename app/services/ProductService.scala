@@ -1,7 +1,7 @@
 package services
 
 import com.google.inject.ImplementedBy
-import model.{CategoryId, ProductCategory, ProductId, ProductInfo}
+import model._
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -10,17 +10,15 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 trait ProductService {
   def categoryName(categoryId: CategoryId): Future[Option[String]]
   def categories: Future[Seq[ProductCategory]]
-  def category(categoryId: CategoryId): Future[
-    Either[ // many things can go wrong
-      String, // categoryId doesn't exist
-      Option[ // categoryId exists but there are no products
-        Seq[  // collection of
-          (ProductId, // productId
-            Option[String] // productName
-          )
-        ]
-//        Seq[(ProductId, Option[String], Option[BigDecimal])]
-    ]]]
+  def category(categoryId: CategoryId): Future[CategoryStatus]
+  def products(categoryStatus: CategoryStatus): Seq[(ProductId, Option[String])] = {
+    val optOfSeq: Option[Seq[(ProductId, Option[String])]] = categoryStatus match {
+      case Left(_) => None
+      case Right(x) => x
+    }
+    val seqOfPairs: Seq[(ProductId, Option[String])] = optOfSeq.getOrElse(List())
+    seqOfPairs
+  }
   def productDetails(productId: ProductId): Future[Option[ProductInfo]]
 }
 
