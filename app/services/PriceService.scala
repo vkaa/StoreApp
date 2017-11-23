@@ -31,9 +31,19 @@ object MockPriceService extends PriceService {
 
   def pricesAsFutures(xs: Seq[ProductId])(implicit price: ProductId => Future[Option[Price]]): Seq[Future[(ProductId, Option[Price])]] =
     xs.map { it: ProductId =>
-      for {
-        pr: Option[Price] <- price(it)
-      } yield (it, pr)
+//      for { // fails ProductPrice should handle Flaky Price Service test
+//        pr: Option[Price] <- price(it)
+//      } yield (it, pr)
+      Try { // passes ProductPrice should handle Flaky Price Service test
+        // but gives execution exception "Someone snipped the network cable!"
+        // TODO: address execution exception "Someone snipped the network cable!"
+        for {
+          pr: Option[Price] <- price(it)
+        } yield (it, pr)
+      } match {
+        case Success(futureResult) => futureResult
+        case _ => Future.successful(it -> None)
+      }
     }
 
   def prices(xs: Seq[ProductId]): Future[Seq[(ProductId, Option[Price])]] = {
