@@ -38,7 +38,6 @@ class HomeController @Inject() (productService: ProductService, priceService: Pr
       for {
         name <- productService.categoryName(categoryId)
         products <- productService.category(categoryId)
-        products.right.flatMap(_._1)
         resp <- productService.category(categoryId)
         (categoryName, categoryProducts, productsPrices) = resp match {
           case Left(s) => (Left(s), None, None)
