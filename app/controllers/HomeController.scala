@@ -36,8 +36,10 @@ class HomeController @Inject() (productService: ProductService, priceService: Pr
   def category(categoryId: CategoryId) = Action.async {
     Try {
       for {
-        resp <- productService.category(categoryId)
         name <- productService.categoryName(categoryId)
+        products <- productService.category(categoryId)
+        products.right.flatMap(_._1)
+        resp <- productService.category(categoryId)
         (categoryName, categoryProducts, productsPrices) = resp match {
           case Left(s) => (Left(s), None, None)
           case Right(products) => (Right(name),
