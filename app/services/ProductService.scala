@@ -10,7 +10,17 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 trait ProductService {
   def categoryName(categoryId: CategoryId): Future[Option[String]]
   def categories: Future[Seq[ProductCategory]]
-  def category(categoryId: CategoryId): Future[Either[String, Option[Seq[(ProductId, Option[String])]]]]
+  def category(categoryId: CategoryId): Future[
+    Either[
+      String, // message when categoryId doesn't exist
+      Option[ // categoryId exists but there are no products
+        Seq[  // collection of
+          (ProductId, // productId
+            Option[String] // productName
+          )
+        ]
+//        Seq[(ProductId, Option[String], Option[BigDecimal])]
+    ]]]
   def productDetails(productId: ProductId): Future[Option[ProductInfo]]
 }
 

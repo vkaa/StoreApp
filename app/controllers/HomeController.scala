@@ -38,10 +38,22 @@ class HomeController @Inject() (productService: ProductService, priceService: Pr
       for {
         resp <- productService.category(categoryId)
         name <- productService.categoryName(categoryId)
-        (categoryName, categoryProducts) = resp match {
-          case Left(s) => (Left(s), None)
-          case Right(products) => (Right(name), products)
+        (categoryName, categoryProducts, productsPrices) = resp match {
+          case Left(s) => (Left(s), None, None)
+          case Right(products) => (Right(name),
+                                    products,
+                                    products.map(it => priceService.prices(it.map(_._1)))
+//                                    .map(it =>
+//                                      Try {
+//                                        for (prices <- it) yield prices
+//                                      } match {
+//                                        case Success(prices) => prices
+//                                        case _ =>
+//                                      }
+//                                    )
+          )
         }
+//      } yield Ok(views.html.products(categoryId, categoryName, categoryProducts, productsPrices))
       } yield Ok(views.html.products(categoryId, categoryName, categoryProducts))
     } match {
       case Success(result) => result
