@@ -4,13 +4,17 @@ import com.google.inject.ImplementedBy
 
 import scala.concurrent.Future
 import scala.util.{Random, Success, Try}
-import model.{Price, ProductId}
+import model.{Price, PriceStatus, ProductId}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import util.Misc.tryToEither
 
 @ImplementedBy(classOf[FlakyMockPriceService])
 trait PriceService {
   def price(productId: ProductId): Future[Option[Price]]
   def prices(xs: Seq[ProductId]): Future[Seq[(ProductId, Option[Price])]]
+  def priceStatus(productId: ProductId): Future[PriceStatus] = for {
+    pr <- Try { price(productId) }.toEither
+  } yield pr
 }
 
 object MockPriceService extends PriceService {
