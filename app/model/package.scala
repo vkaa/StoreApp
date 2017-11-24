@@ -10,5 +10,9 @@ package object model {
           Option[String] // productName
           )
         ]
-      ]]
+  ]]
+  type PriceStatus = Either[ // things can go wrong
+    String, // Error getting price
+    Option[Price] // Possibility of not-priced product
+  ]
 }
