@@ -6,15 +6,38 @@ import scala.concurrent.Future
 import scala.util.{Random, Success, Try}
 import model.{Price, PriceStatus, ProductId}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import util.Misc.tryToEither
+import util.Misc.tryToFutureEither
 
 @ImplementedBy(classOf[FlakyMockPriceService])
 trait PriceService {
   def price(productId: ProductId): Future[Option[Price]]
   def prices(xs: Seq[ProductId]): Future[Seq[(ProductId, Option[Price])]]
-  def priceStatus(productId: ProductId): Future[PriceStatus] = for {
-    pr <- Try { price(productId) }.toEither
-  } yield pr
+  def priceStatus1(productId: ProductId): Future[PriceStatus] =
+    for {
+      x <- price(productId)
+      y = Try {
+        x
+      }.map(Right(_)).recover({case e: Exception => Left(e.getMessage)}).get
+    } yield y
+
+  def priceStatus(productId: ProductId): Future[PriceStatus] =
+    price(productId).toFutureEither
+
+  def f1(productId: ProductId): Either[String, Future[Option[Price]]] =
+    Try { price(productId) }
+    .map(Right(_)).recover({case e: Exception => Left(e.getMessage)}).get
+
+//    Try {
+//      for {
+//        pr <- price(productId)
+//      } yield pr
+//    }.map()
+//    Try(price(productId)).map(Right(_)).recover{case e: Exception => Left(e.getMessage)}
+//    for {
+//    pr <- Try(price(productId)).toEither
+//    pr <- Try(price(productId))
+//      .map(Right(_)).recover{case e: Exception => Left(e.getMessage)}
+//  } yield pr.map(Right(_)).recover{case e: Exception => Left(e.getMessage)}
 }
 
 object MockPriceService extends PriceService {
