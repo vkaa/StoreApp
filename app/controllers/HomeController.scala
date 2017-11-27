@@ -37,14 +37,13 @@ class HomeController @Inject() (productService: ProductService, priceService: Pr
     Try {
       for {
         name <- productService.categoryName(categoryId)
-        products <- productService.category(categoryId)
-        resp <- productService.category(categoryId)
-        (categoryName, categoryProducts, productsPrices) = resp match {
+        categoryStatus <- productService.category(categoryId)
+        products = productService.products(categoryStatus)
+        prices <- priceService.prices(products.unzip._1)
+
+        (categoryName, categoryProducts, productsPrices) = categoryStatus match {
           case Left(s) => (Left(s), None, None)
-          case Right(products) => (Right(name),
-                                    products,
-                                    products.map(it => priceService.prices(it.map(_._1)))
-          )
+          case Right(_) => (Right(name), Some(products), prices)
         }
       } yield Ok(views.html.products(categoryId, categoryName, categoryProducts))
     } match {
@@ -52,5 +51,4 @@ class HomeController @Inject() (productService: ProductService, priceService: Pr
       case _ => Future.successful(Ok(HtmlFormat.raw("<h1>Failed get products for category</h1>")))
     }
   }
-
 }

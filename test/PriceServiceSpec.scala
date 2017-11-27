@@ -4,8 +4,7 @@ import services.{FlakyMockPriceService, MockPriceService, PriceService}
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.{Failure, Success, Try}
-//import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import util.control.Breaks._
+import scala.util.control.Breaks._
 
 class PriceServiceSpec extends PlaySpec {
 
