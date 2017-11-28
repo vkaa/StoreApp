@@ -65,6 +65,22 @@ class MiscSpec extends PlaySpec{
       }
     }
 
+    "test failed applied to future" in {
+      val applyFailed = futFailed(7).failed
+      val v = Await.result(applyFailed, 1 .seconds)
+      println(s"applyFailed: ${v.getClass}")
+      println(s"applyFailed value: ${v.getMessage}")
+    }
+
+    /*
+    "test transform on failed future" in {
+      val transformed = futFailed(7).transform(
+        res => Right(res),
+        res => Left(res)
+      )
+    }
+    */
+
     "test Await.result value" in {
       val v = Await.result(futFailed(7), 1 .seconds)
       println(s"Await.result: ${v.getClass}")
