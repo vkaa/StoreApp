@@ -54,7 +54,7 @@ class MiscSpec extends PlaySpec{
       catch {
         case NonFatal(e) => println(s"NonFatal '${e.getMessage}'")
         case e: Throwable => println(s"Throwable '${e.getMessage}'")
-        case _ => println(s"case _")
+        case _: Throwable => println(s"case _")
       }
     }
 
@@ -81,11 +81,14 @@ class MiscSpec extends PlaySpec{
     }
     */
 
+    /*
     "test Await.result value" in {
       val v = Await.result(futFailed(7), 1 .seconds)
       println(s"Await.result: ${v.getClass}")
     }
+    */
 
+    /*
     "return Left for failed future" in {
 //      val futEither = futFailed(7).toFutureEither
       val futEither: Future[Either[String, BigDecimal]] = for {
@@ -108,5 +111,6 @@ class MiscSpec extends PlaySpec{
       futValue.isLeft mustBe true
       futValue.left.get mustBe "Someone snipped the network cable!"
     }
+    */
   }
 }
