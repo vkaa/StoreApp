@@ -26,7 +26,8 @@ class MiscSpec extends PlaySpec{
       Future.failed(new Exception("Someone snipped the network cable!"))
 
     "return Left for failed future" in {
-//      val futEither = futFailed(7).toFutureEither
+      val futEither = futFailed(7).toFutureEither
+      /*
       val futEither: Future[Either[String, BigDecimal]] = for {
         x <- futFailed(7)
         y = Try {
@@ -38,6 +39,7 @@ class MiscSpec extends PlaySpec{
         }.map(Right(_)).recover({case e: Exception => Left(e.getMessage)}).get
         */
       } yield y
+      */
 
       val futValue = Await.result(futEither, 1.seconds)
       futValue.isLeft mustBe true
